@@ -4,6 +4,9 @@ from flask_restx import Namespace, Resource, fields
 # 认证库
 from flask_login import login_required, current_user
 
+# 导入HTTP状态码
+from http import HTTPStatus
+
 # 导入数据库
 from flaskr.db import db
 from flaskr.models import product, record, user
@@ -153,6 +156,15 @@ class Product(Resource):
         if not checkid(id):
             return {'message': '产品不存在'}, 400
 
+        # 查询该名字是否被占用
+        exist = db.session.execute(
+            db.select(product).where(
+                product.p_name == name, product.p_id != id)
+        ).scalar_one_or_none()
+
+        if exist:
+            return {'message': '产品名字已存在'}, 400
+
         # 更新产品
         db.session.execute(db.update(product)
                            .where(product.p_id == id)
@@ -184,7 +196,7 @@ class Product(Resource):
 @api.route('/search/<string:name>')
 class Search(Resource):
     @api.doc(description='搜索查询，模糊查找')
-    @api.marshal_with(product_model)
+    @api.marshal_with(product_model, code=200)  # type: ignore
     @login_required
     def get(self, name):
         '''

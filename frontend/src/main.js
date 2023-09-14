@@ -12,7 +12,7 @@ import router from "@/router";
 
 
 // 配置axios默认域名
-axios.defaults.baseURL = "http://localhost:8088"
+axios.defaults.baseURL = "http://127.0.0.1:5000"
 // 前端cookie请求
 axios.defaults.withCredentials = true
 // 自定义vue属性http
@@ -24,6 +24,6 @@ Vue.use(ElementUI);
 Vue.config.productionTip = false
 
 new Vue({
-  render: h => h(App),
-  router: router,
+    render: h => h(App),
+    router: router,
 }).$mount('#app')

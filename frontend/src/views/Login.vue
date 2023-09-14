@@ -1,11 +1,11 @@
 <template>
     <div class="front">
         <el-form :model="form" status-icon :rules="rules" ref="form" label-width="100px">
-            <el-form-item label="用户名" prop="username">
-                <el-input type="text" v-model="form.username" autocomplete="off"></el-input>
+            <el-form-item label="用户名" prop="u_name">
+                <el-input type="text" v-model="form.u_name" autocomplete="off"></el-input>
             </el-form-item>
-            <el-form-item label="密码" prop="password">
-                <el-input type="password" v-model="form.password" autocomplete="off"></el-input>
+            <el-form-item label="密码" prop="u_pwd">
+                <el-input type="password" v-model="form.u_pwd" autocomplete="off"></el-input>
             </el-form-item>
 
             <el-form-item>
@@ -19,19 +19,18 @@
 
 
 <script>
-import qs from "qs";
 export default {
     data() {
         return {
             form: {
-                username: "",
-                password: "",
+                u_name: "",
+                u_pwd: "",
             },
             rules: {
-                username: [
+                u_name: [
                     { required: true, message: "请输入用户名", trigger: "blur" },
                 ],
-                password: [
+                u_pwd: [
                     { required: true, message: "请输入密码", trigger: "blur" },
                     {
                         min: 6,
@@ -48,27 +47,19 @@ export default {
             if (this.form.username === "" || this.form.password === "") {
                 this.$alert("账号或密码不能为空", "登录错误");
             } else {
-                this.$http({
-                    headers: {
-                        "Content-Type": "application/x-www-form-urlencoded",
-                    },
-                    method: "post",
-                    url: "login",
-                    data: qs.stringify(this.form),
-                })
+                this.$http.post("/auth/login", this.form)
                     .then((res) => {
-                        if (res.data.code === 1) {
+                        console.log(res);
+                        console.log(res.status);
+                        if (res.status === 200) {
                             this.$message.success(res.data.message);
-                            document.cookie = res.cookie;
-
+                            // document.cookie = res.cookie;
                             this.$router.push("/dashboard");
-                        } else if (res.data.code === 0) {
-                            this.$message.warning(res.data.message);
                         }
                     })
                     .catch((err) => {
-                        console.log(err);
-                        this.$message.warning("请求失败");
+                        console.log(err.response.data);
+                        this.$message.warning(err.response.data.message);
                     });
             }
         },

@@ -30,17 +30,20 @@ class AllRecord(Resource):
         所有记录列表
         '''
 
-        stmt = (db.select(record, user)
-                .join(user, record.r_u_id == user.u_id)
-                # .join(product, record.r_p_id == product.p_id)
+        # stmt = (db.select(record, user)
+        #         .join(user, record.r_u_id == user.u_id)
+        #         # .join(product, record.r_p_id == product.p_id)
 
-                .order_by(record.r_id))
+        #         .order_by(record.r_id))
 
-        print(stmt)
+        # print(stmt)
 
-        # 获取所有记录
-        records = db.session.execute(stmt
-                                     ).scalars()
+        # # 获取所有记录
+        # records = db.session.execute(stmt
+        #                              ).scalars()
+
+        records = db.session.query(
+            db.select(record, product, user).where((product.p_id == record.r_p_id) & (user.u_id == record.r_u_id)).order_by(record.r_id)).all()
 
         print(type(records))
         print(records)
@@ -48,12 +51,12 @@ class AllRecord(Resource):
         result = []
         for res in records:
             result.append({
-                'r_id': res.r_id,
+                'r_id': res.record.r_id,
                 # 'p_name': res.p_name,
-                'u_name': res.u_name,
-                'r_num': res.r_num,
-                'type': res.r_type,
-                'r_time': res.r_time
+                # 'u_name': res.u_name,
+                # 'r_num': res.r_num,
+                # 'type': res.r_type,
+                # 'r_time': res.r_time
             })
 
         return result, 200

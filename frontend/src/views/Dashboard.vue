@@ -69,13 +69,7 @@
         </el-header> -->
 
                 <el-main>
-                    <!--声明路由链接-->
-                    <router-link to="/dashboard/product"></router-link>
-                    <router-link to="/dashboard/changinfo"></router-link>
-                    <router-link to="/dashboard/inbox"></router-link>
-                    <router-link to="/dashboard/outbook"></router-link>
-                    <router-link to="/dashboard/newmail"></router-link>
-                    <router-link to="/dashboard/personalinfo"></router-link>
+
                     <!--声明路由占位符标签-->
                     <router-view></router-view>
                 </el-main>
@@ -96,9 +90,9 @@ export default {
         };
     },
     created: function () {
-        this.$http.get("profile/show").then((res) => {
-            this.name = res.data[0].name;
-        });
+        // this.$http.get("profile/show").then((res) => {
+        //     this.name = res.data[0].name;
+        // });
     },
     methods: {
         logout() {

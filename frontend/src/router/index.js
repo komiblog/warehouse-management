@@ -8,7 +8,9 @@ import Signup from "@/views/Signup.vue";
 import Product from "@/components/Product.vue";
 import Inbox from "@/components/Inbox.vue";
 import Outbox from "@/components/Outbox.vue"
-import NewMail from "@/components/NewMail.vue";
+import Input from "@/components/Input.vue";
+import Output from "@/components/Output.vue";
+import Update from "@/components/Update.vue";
 import ChangeHeadshot from "@/components/ChangeHeadshot.vue";
 import PersonalInfo from "@/components/PersonalInfo.vue";
 import ChangeInfo from "@/components/ChangeInfo.vue"
@@ -24,10 +26,13 @@ const router = new VueRouter({
     routes: [
         {
             path: '/dashboard', component: Dashboard, children: [
+                { path: '', redirect: 'product' },  // 重定向
+                { path: 'output', component: Output },
                 { path: 'product', component: Product },
+                { path: 'update', component: Update },
                 { path: 'inbox', component: Inbox },
                 { path: 'outbox', component: Outbox },
-                { path: 'newmail', component: NewMail },
+                { path: 'input', component: Input },
                 { path: 'changeheadshot', component: ChangeHeadshot },
                 { path: 'personalinfo', component: PersonalInfo },
                 { path: 'changeinfo', component: ChangeInfo },
