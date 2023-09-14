@@ -6,6 +6,9 @@ from flaskr.db import db
 # RESTful API
 from flask_restx import Api
 
+# 注册用户认证
+from flaskr.auth import login_manager
+
 
 def create_app():
     # 创造并配置app, instance_relative_config=True表示配置文件是相对于instance folder的相对路径
@@ -20,6 +23,9 @@ def create_app():
 
     # 初始化数据库
     db.init_app(app)
+
+    # 初始化用户认证
+    login_manager.init_app(app)
 
     # 导入并注册命名空间
     from . import manage

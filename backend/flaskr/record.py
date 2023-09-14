@@ -1,6 +1,9 @@
 # RESTful API
 from flask_restx import Namespace, Resource, fields
 
+# 认证库
+from flask_login import login_required
+
 # 导入数据库
 from flaskr.db import db
 from flaskr.models import record, product, user
@@ -19,27 +22,38 @@ record_model = api.model('RecordModel', {
 
 @api.route('/record')
 class AllRecord(Resource):
-
     @api.doc(description='获取所有记录')
     @api.marshal_with(record_model)
+    @login_required
     def get(self):
         '''
-        产品列表
+        所有记录列表
         '''
-        # 获取所有记录
-        records = db.session.execute(
-            db.select(record).order_by(record.r_id)).scalars()
 
-        # 转换为字典
+        stmt = (db.select(record, user)
+                .join(user, record.r_u_id == user.u_id)
+                # .join(product, record.r_p_id == product.p_id)
+
+                .order_by(record.r_id))
+
+        print(stmt)
+
+        # 获取所有记录
+        records = db.session.execute(stmt
+                                     ).scalars()
+
+        print(type(records))
+        print(records)
+        # 转换为列表
         result = []
-        for r in records:
+        for res in records:
             result.append({
-                'r_id': r.r_id,
-                'r_p_id': r.r_p_id,
-                'r_u_id': r.r_u_id,
-                'r_num': r.r_num,
-                'r_type': r.r_type,
-                'r_time': r.r_time
+                'r_id': res.r_id,
+                # 'p_name': res.p_name,
+                'u_name': res.u_name,
+                'r_num': res.r_num,
+                'type': res.r_type,
+                'r_time': res.r_time
             })
 
         return result, 200
@@ -55,7 +69,7 @@ class Record(Resource):
         '''
         # 获取该产品记录
         records = db.session.execute(
-            db.select(record).where(record.r_p_id == id).order_by(record.r_id)).scalars()
+            db.select(record, user).where(record.r_p_id == id).order_by(record.r_id)).scalars()
 
         # 转换为字典
         result = []

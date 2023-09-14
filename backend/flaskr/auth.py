@@ -1,6 +1,9 @@
 # RESTful API
 from flask_restx import Namespace, Resource, fields
 
+# 用户认证
+from flask_login import LoginManager, login_user, logout_user, login_required, current_user
+
 # 导入数据库
 from flaskr.db import db
 from flaskr.models import user
@@ -16,40 +19,62 @@ user_model = api.model('UserModel', {
 })
 
 
+login_manager = LoginManager()
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return db.session.execute(db.select(user).where(user.u_id == user_id)).scalar_one_or_none()
+
+
 # 登录视图
 @api.route('/login')
 class Login(Resource):
     @api.doc(description='用户登录,数据库验证账号密码')
-    @api.expect(user_model, validate=True)  # 校验输入
+    @api.expect(user_model, validate=True)  # 校验输入,确认请求体不为空
     def post(self):
         '''
         用户登录
         '''
-        # 如果请求体不为空，获取请求体
-        if api.payload is not None:
-            # args = api.payload
-            username = api.payload.get('u_name')
-            password = api.payload.get('u_pwd')
+        if current_user.is_authenticated:  # type: ignore
+            return {'message': '用户已登录'}, 200
 
-            # 如果用户名或密码为空，返回错误信息
-            if not username or not password:
-                return {'message': '用户名或密码为空'}, 400
+        username = api.payload.get('u_name')
+        password = api.payload.get('u_pwd')
 
-            # 获取用户
-            d_user = db.session.execute(db.select(user).where(
-                user.u_name == username)).scalar_one_or_none()
+        # 如果用户名或密码为空，返回错误信息
+        if not username or not password:
+            return {'message': '用户名或密码为空'}, 400
 
-            # 如果用户不存在或密码错误，返回错误信息
-            if not d_user:
+        # 获取用户
+        d_user = db.session.execute(db.select(user)
+                                    .where(user.u_name == username)).scalar_one_or_none()
 
-                return {'message': '用户不存在'}, 401
+        # 如果用户不存在或密码错误，返回错误信息
+        if not d_user:
 
-            if d_user.u_pwd != password:
-                return {'message': '密码错误'}, 401
+            return {'message': '用户不存在'}, 401
 
-            return {'message': '登录成功'}, 200
-        else:
-            return {'message': '请求体错误'}, 400
+        if d_user.u_pwd != password:
+            return {'message': '密码错误'}, 401
+
+        # 登录用户
+        login_user(d_user)
+
+        return {'message': '登录成功'}, 200
+
+
+# 登出视图
+@api.route('/logout')
+class Logout(Resource):
+    @api.doc(description='用户登出，需求文档里没有，但是还是比较需要的。')
+    @login_required  # 权限控制，必须先登录
+    def get(self):
+        '''
+        用户登出
+        '''
+        logout_user()
+        return {'message': '登出成功'}, 200
 
 
 # 测试数据库连接
