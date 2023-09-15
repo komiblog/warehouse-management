@@ -69,9 +69,6 @@ export default {
         this.$http.get("/manage/product").then((res) => {
             console.log(res.data);
             this.form = res.data;
-            // for (let i = r.length - 1; i > -1; i--) {
-            //     r[i].sex = r[i].sex === 0 ? "未知" : r[i].sex === 1 ? "男" : "女";
-            // }
         });
     },
 
@@ -165,36 +162,7 @@ export default {
             });
         },
 
-        handleDelete(row) {
-            this.$http({
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded",
-                },
-                method: "post",
-                url: "profile/del",
-                data: "id=" + row.userid,
-            })
-                .then((res) => {
-                    if (res.data.code === 1) {
-                        this.$alert("成功删除" + row.name + "的信息", "删除成功");
 
-                        this.$http.get("/profile/showAll").then((res) => {
-                            let r = res.data;
-                            for (let i = r.length - 1; i > -1; i--) {
-                                r[i].sex =
-                                    r[i].sex === 0 ? "未知" : r[i].sex === 1 ? "男" : "女";
-                            }
-                            this.form = r;
-                        });
-                    } else if (res.data.code === 0) {
-                        this.$alert("未能删除" + row.name + "的信息", "删除失败");
-                    }
-                })
-                .catch((err) => {
-                    console.log(err);
-                    this.$alert("请重试", "请求失败");
-                });
-        },
         //每页条数改变时触发 选择一页显示多少行
         handleSizeChange(val) {
             console.log(`每页 ${val} 条`);

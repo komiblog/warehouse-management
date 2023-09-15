@@ -21,7 +21,7 @@
                             <el-table-column prop="u_name" label="用户" width="100"> </el-table-column>
                             <el-table-column prop="r_num" label="数量" width="100"> </el-table-column>
                             <el-table-column prop="type" label="操作" width="75"> </el-table-column>
-                            <el-table-column prop="r_time" label="时间" width="200"> </el-table-column>
+                            <el-table-column prop="r_time" label="时间"> </el-table-column>
                         </el-table>
                         <!-- 分页器 -->
                         <div class="block" style="margin-top: 15px">
