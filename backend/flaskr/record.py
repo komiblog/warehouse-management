@@ -4,6 +4,8 @@ from flask_restx import Namespace, Resource, fields
 # 认证库
 from flask_login import login_required
 
+from datetime import datetime
+
 # 导入数据库
 from flaskr.db import db
 from flaskr.models import record, product, user
@@ -12,11 +14,11 @@ api = Namespace('record', description='日志相关接口')
 
 record_model = api.model('RecordModel', {
     'r_id': fields.Integer(required=True, description='记录编号'),
-    'p_name': fields.Integer(required=True, description='产品名称'),
-    'u_name': fields.Integer(required=True, description='用户名称'),
+    'p_name': fields.String(required=True, description='产品名称'),
+    'u_name': fields.String(required=True, description='用户名称'),
     'r_num': fields.Integer(required=True, description='产品数量'),
     'type': fields.String(max_length=10, required=True, description='操作类型'),
-    'r_time': fields.DateTime(required=True, description='操作时间'),
+    'r_time': fields.String(required=True, description='操作时间'),
 })
 
 
@@ -29,73 +31,72 @@ class AllRecord(Resource):
         '''
         所有记录列表
         '''
-
-        # stmt = (db.select(record, user)
-        #         .join(user, record.r_u_id == user.u_id)
-        #         # .join(product, record.r_p_id == product.p_id)
-
-        #         .order_by(record.r_id))
-
-        # print(stmt)
-
-        # # 获取所有记录
-        # records = db.session.execute(stmt
-        #                              ).scalars()
-
-        # records = db.session.query(
-        #     db.select(record, product, user).where((product.p_id == record.r_p_id) & (user.u_id == record.r_u_id)).order_by(record.r_id)).all()
-
-        # print(type(records))
-        # print(records)
-        # # 转换为列表
-        # result = []
-        # for res in records:
-        #     result.append({
-        #         'r_id': res.record.r_id,
-        #         # 'p_name': res.p_name,
-        #         # 'u_name': res.u_name,
-        #         # 'r_num': res.r_num,
-        #         # 'type': res.r_type,
-        #         # 'r_time': res.r_time
-        #     })
         records = db.session.execute(
             db.select(record).order_by(record.r_id)).scalars()
 
         products = db.session.execute(
-            db.select(product).order_by(product.p_id).scalars()
-        )
+            db.select(product).order_by(product.p_id)
+        ).scalars()
 
         users = db.session.execute(
-            db.select(user).order_by(user.u_id).scalars()
-        )
+            db.select(user).order_by(user.u_id)
+        ).scalars()
 
         print(type(records))
         print(records)
         # 转换为列表
         result = []
-        pu_name = {}
+        p_names = {}
+        u_names = {}
+
+        result1 = []
+        result2 = []
+        result3 = []
 
         for res in records:
-            for pro in products:
-                if res.r_p_id == pro.p_id:
-                    pu_name[res.r_p_id] = pro.p_name
-
-        for res in records:
-            for ur in users:
-                if res.r_u_id == ur.u_id:
-                    pu_name[res.r_u_id] = ur.u_id
-
-        for res in records:
-            result.append({
+            result1.append({
                 'r_id': res.r_id,
-                'p_name': pu_name[res.p_name],
-                'u_name': pu_name[res.u_name],
+                'r_p_id': res.r_p_id,
+                'r_u_id': res.r_u_id,
                 'r_num': res.r_num,
-                'type': res.r_type,
+                'r_type': res.r_type,
                 'r_time': res.r_time
             })
 
-        return result, 200
+        for pro in products:
+            result2.append({
+                'p_id': pro.p_id,
+                'p_name': pro.p_name,
+            })
+
+        for ur in users:
+            result3.append({
+                'u_id': ur.u_id,
+                'u_name': ur.u_name,
+            })
+
+        for re in result1:
+            for po in result2:
+                if re['r_p_id'] == po['p_id']:
+                    p_names[re['r_p_id']] = po['p_name']
+
+        for re in result1:
+            for u in result3:
+                if re['r_u_id'] == u['u_id']:
+                    u_names[re['r_u_id']] = u['u_name']
+
+        for res in result1:
+
+            if res['r_p_id'] in p_names and res['r_u_id'] in u_names:
+                result.append({
+                    'r_id': res['r_id'],
+                    'p_name': p_names[res['r_p_id']],
+                    'u_name': u_names[res['r_u_id']],
+                    'r_num': res['r_num'],
+                    'type': "入库" if res['r_type'] == 1 else "出库",
+                    # datetime转换为字符串
+                    'r_time': res['r_time'].strftime('%Y-%m-%d %H:%M:%S')
+                })
 
         return result, 200
 
@@ -112,16 +113,68 @@ class Record(Resource):
         records = db.session.execute(
             db.select(record, user).where(record.r_p_id == id).order_by(record.r_id)).scalars()
 
-        # 转换为字典
+        products = db.session.execute(
+            db.select(product).order_by(product.p_id)
+        ).scalars()
+
+        users = db.session.execute(
+            db.select(user).order_by(user.u_id)
+        ).scalars()
+
+        print(type(records))
+        print(records)
+        # 转换为列表
         result = []
-        for r in records:
-            result.append({
-                'r_id': r.r_id,
-                'r_p_id': r.r_p_id,
-                'r_u_id': r.r_u_id,
-                'r_num': r.r_num,
-                'r_type': r.r_type,
-                'r_time': r.r_time
+        p_names = {}
+        u_names = {}
+
+        result1 = []
+        result2 = []
+        result3 = []
+
+        for res in records:
+            result1.append({
+                'r_id': res.r_id,
+                'r_p_id': res.r_p_id,
+                'r_u_id': res.r_u_id,
+                'r_num': res.r_num,
+                'r_type': res.r_type,
+                'r_time': res.r_time
             })
+
+        for pro in products:
+            result2.append({
+                'p_id': pro.p_id,
+                'p_name': pro.p_name,
+            })
+
+        for ur in users:
+            result3.append({
+                'u_id': ur.u_id,
+                'u_name': ur.u_name,
+            })
+
+        for re in result1:
+            for po in result2:
+                if re['r_p_id'] == po['p_id']:
+                    p_names[re['r_p_id']] = po['p_name']
+
+        for re in result1:
+            for u in result3:
+                if re['r_u_id'] == u['u_id']:
+                    u_names[re['r_u_id']] = u['u_name']
+
+        for res in result1:
+
+            if res['r_p_id'] in p_names and res['r_u_id'] in u_names:
+                result.append({
+                    'r_id': res['r_id'],
+                    'p_name': p_names[res['r_p_id']],
+                    'u_name': u_names[res['r_u_id']],
+                    'r_num': res['r_num'],
+                    'type': "入库" if res['r_type'] == 1 else "出库",
+                    # datetime转换为字符串
+                    'r_time': res['r_time'].strftime('%Y-%m-%d %H:%M:%S')
+                })
 
         return result, 200

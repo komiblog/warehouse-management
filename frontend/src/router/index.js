@@ -10,6 +10,7 @@ import Inbox from "@/components/Inbox.vue";
 import Outbox from "@/components/Outbox.vue"
 import Input from "@/components/Input.vue";
 import Output from "@/components/Output.vue";
+import Record from "@/components/Record.vue";
 import Update from "@/components/Update.vue";
 import ChangeHeadshot from "@/components/ChangeHeadshot.vue";
 import PersonalInfo from "@/components/PersonalInfo.vue";
@@ -30,6 +31,7 @@ const router = new VueRouter({
                 { path: 'output', component: Output },
                 { path: 'product', component: Product },
                 { path: 'update', component: Update },
+                { path: 'record', component: Record },
                 { path: 'inbox', component: Inbox },
                 { path: 'outbox', component: Outbox },
                 { path: 'input', component: Input },

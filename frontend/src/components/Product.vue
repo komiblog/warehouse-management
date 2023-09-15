@@ -17,7 +17,7 @@
                         <el-button size="medium" @click="$router.push('/dashboard/input')">入库</el-button>
                     </el-col>
                     <el-col :span="2">
-                        <el-button size="medium">所有记录</el-button>
+                        <el-button size="medium" @click="$router.push('/dashboard/record')">所有记录</el-button>
                     </el-col>
 
                 </el-row>
@@ -38,7 +38,7 @@
                             <el-button size="medium" @click="reduce(scope.row)">出库</el-button>
                             <el-button size="medium" @click="update(scope.row)">修改</el-button>
                             <el-button size="medium" type="danger" @click="deleterow(scope.row)">删除</el-button>
-                            <el-button size="medium">记录</el-button>
+                            <el-button size="medium" @click="record(scope.row)">记录</el-button>
 
                         </template>
                     </el-table-column>
@@ -76,6 +76,14 @@ export default {
     },
 
     methods: {
+        record(row) {
+            this.$router.push({
+                path: "/dashboard/record",
+                query: {
+                    p_id: row.p_id
+                },
+            })
+        },
         deleterow(row) {
             this.$confirm('确定删除?', '提示', {
                 confirmButtonText: '确定',
