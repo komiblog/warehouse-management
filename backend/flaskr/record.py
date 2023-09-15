@@ -42,22 +42,60 @@ class AllRecord(Resource):
         # records = db.session.execute(stmt
         #                              ).scalars()
 
-        records = db.session.query(
-            db.select(record, product, user).where((product.p_id == record.r_p_id) & (user.u_id == record.r_u_id)).order_by(record.r_id)).all()
+        # records = db.session.query(
+        #     db.select(record, product, user).where((product.p_id == record.r_p_id) & (user.u_id == record.r_u_id)).order_by(record.r_id)).all()
+
+        # print(type(records))
+        # print(records)
+        # # 转换为列表
+        # result = []
+        # for res in records:
+        #     result.append({
+        #         'r_id': res.record.r_id,
+        #         # 'p_name': res.p_name,
+        #         # 'u_name': res.u_name,
+        #         # 'r_num': res.r_num,
+        #         # 'type': res.r_type,
+        #         # 'r_time': res.r_time
+        #     })
+        records = db.session.execute(
+            db.select(record).order_by(record.r_id)).scalars()
+
+        products = db.session.execute(
+            db.select(product).order_by(product.p_id).scalars()
+        )
+
+        users = db.session.execute(
+            db.select(user).order_by(user.u_id).scalars()
+        )
 
         print(type(records))
         print(records)
         # 转换为列表
         result = []
+        pu_name = {}
+
+        for res in records:
+            for pro in products:
+                if res.r_p_id == pro.p_id:
+                    pu_name[res.r_p_id] = pro.p_name
+
+        for res in records:
+            for ur in users:
+                if res.r_u_id == ur.u_id:
+                    pu_name[res.r_u_id] = ur.u_id
+
         for res in records:
             result.append({
-                'r_id': res.record.r_id,
-                # 'p_name': res.p_name,
-                # 'u_name': res.u_name,
-                # 'r_num': res.r_num,
-                # 'type': res.r_type,
-                # 'r_time': res.r_time
+                'r_id': res.r_id,
+                'p_name': pu_name[res.p_name],
+                'u_name': pu_name[res.u_name],
+                'r_num': res.r_num,
+                'type': res.r_type,
+                'r_time': res.r_time
             })
+
+        return result, 200
 
         return result, 200
 
