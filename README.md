@@ -1,20 +1,21 @@
 # warehouse-management 仓库管理系统
 ## 部分网站界面
 ### 登录界面
-![image](https://github.com/komiblog/warehouse-management/assets/102006886/24a9c1b3-22d7-44fa-a7f9-f25293cb6604)
+![image](https://github.com/komiblog/warehouse-management/assets/102006886/555947f2-90ab-466a-b0bf-14a0e32e45f7)
 
 ### 主界面
-![image](https://github.com/komiblog/warehouse-management/assets/102006886/e95ef05a-c0e2-4cee-a469-72b4d186cbf8)
+![image](https://github.com/komiblog/warehouse-management/assets/102006886/b411f121-70a7-4d75-afe3-ebe85559c2fc)
 
 ### 所有记录查询界面
-![image](https://github.com/komiblog/warehouse-management/assets/102006886/4d28ce7c-67cc-4051-8a92-8654c0e961e2)
+![image](https://github.com/komiblog/warehouse-management/assets/102006886/b7adc519-d2cd-45bb-b764-3eb54a8465d5)
 
 ### 产品修改界面
-![image](https://github.com/komiblog/warehouse-management/assets/102006886/926d7900-d81d-4288-9771-1ff1213c8eb8)
+![image](https://github.com/komiblog/warehouse-management/assets/102006886/e39952d9-d8d5-4260-a3eb-49ab5aeb6f27)
 
 
 ## 接口文档
-![image](https://github.com/komiblog/warehouse-management/assets/102006886/8887a650-59d3-42fc-bb23-2896d75182c1)
+![image](https://github.com/komiblog/warehouse-management/assets/102006886/b9e334d0-e0af-4877-8d90-3e1299e92b92)
+
 
 
 # 技术栈
