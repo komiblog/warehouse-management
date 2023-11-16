@@ -41,24 +41,24 @@ const postData = {
     u_pwd: '1'
 };
 // 注册一个全局前置守卫
-router.beforeEach((to, from, next) => {
-    if (to.path !== '/login') {    //判断当前路由是否需要进行权限控制
-        axios.post("/auth/login", postData).then((res) => {
-            if (res.status === 200) {
-                console.log("权限通过")
-                next()
-            }
-        }).catch((err) => {
-            console.log(err)
-            console.log("权限不通过")
-            next({
-                path: "/login"
-            })
-        })
-    } else {
-        next() // 放行
-    }
-})
+// router.beforeEach((to, from, next) => {
+//     if (to.path !== '/login') {    //判断当前路由是否需要进行权限控制
+//         axios.post("/auth/login", postData).then((res) => {
+//             if (res.status === 200) {
+//                 console.log("权限通过")
+//                 next()
+//             }
+//         }).catch((err) => {
+//             console.log(err)
+//             console.log("权限不通过")
+//             next({
+//                 path: "/login"
+//             })
+//         })
+//     } else {
+//         next() // 放行
+//     }
+// })
 
 
 export default router
